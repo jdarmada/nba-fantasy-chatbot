@@ -2,7 +2,7 @@
 
 import { useChat } from '@ai-sdk/react';
 
-export default function Chat() {
+export default function WojBot() {
   const { messages, input, handleInputChange, handleSubmit } = useChat();
   return (
     <div className="flex flex-col w-full max-w-md py-24 mx-auto stretch">
@@ -17,7 +17,7 @@ export default function Chat() {
         <input
           className="fixed dark:bg-zinc-900 bottom-0 w-full max-w-md p-2 mb-8 border border-zinc-300 dark:border-zinc-800 rounded shadow-xl"
           value={input}
-          placeholder="Give me two NBA players"
+          placeholder="Give me two NBA players to compare"
           onChange={handleInputChange}
         />
       </form>

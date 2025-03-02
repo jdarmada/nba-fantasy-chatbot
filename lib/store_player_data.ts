@@ -139,13 +139,13 @@ export async function fetch_all_games(
                 minutes_played: game.min,
             }));
 
-            allGames = allGames.concat(games); // Add the new games to the array
+            allGames = allGames.concat(games); 
 
             // Check if there is a next_cursor for pagination
             if (data.meta.next_cursor) {
-                nextCursor = data.meta.next_cursor; // Set the cursor for the next request
+                nextCursor = data.meta.next_cursor; 
             } else {
-                break; // If no next_cursor, stop the loop
+                break; 
             }
         } else {
             console.error('Error:', response.status, response.statusText);
