@@ -1,4 +1,4 @@
-import { Client, type ClientOptions } from '@elastic/elasticsearch';
+import { elasticClient, checkIndex } from "./elasticClient";
 
 const teams: Record<number, string> = {
     1: 'Atlanta Hawks',
@@ -67,28 +67,6 @@ interface GameStats {
     minutes_played: number;
 }
 
-//Elastic Initialization
-const config: ClientOptions = {
-    node: `${process.env.ELASTIC_ENDPOINT}`,
-    auth: {
-        apiKey: `${process.env.ELASTIC_API_KEY}`,
-    },
-};
-
-const client = new Client(config);
-
-const indexName = 'career-stats';
-
-async function checkIndex() {
-    //Check if index exists
-    if (indexName && (await client.indices.exists({ index: indexName }))) {
-        return;
-    } else {
-        //Create index
-        await client.indices.create({ index: indexName });
-    }
-}
-
 export async function fetch_all_games(
     player_id: number
 ): Promise<GameStats[] | undefined> {
@@ -138,13 +116,13 @@ export async function fetch_all_games(
                 minutes_played: game.min,
             }));
 
-            allGames = allGames.concat(games); 
+            allGames = allGames.concat(games);
 
             // Check if there is a next_cursor for pagination
             if (data.meta.next_cursor) {
-                nextCursor = data.meta.next_cursor; 
+                nextCursor = data.meta.next_cursor;
             } else {
-                break; 
+                break;
             }
         } else {
             console.error('Error:', response.status, response.statusText);
@@ -156,7 +134,7 @@ export async function fetch_all_games(
 }
 
 async function storeAllGames(player_id: number): Promise<void> {
-    await checkIndex();
+    await checkIndex('career-stats');
 
     const careerGames = await fetch_all_games(player_id);
 
@@ -164,18 +142,17 @@ async function storeAllGames(player_id: number): Promise<void> {
         console.log('No career games found');
         return;
     }
-   
-    const bulkResponse = await client.helpers.bulk({
+
+    const bulkResponse = await elasticClient.helpers.bulk({
         datasource: careerGames,
-      
+
         onDocument(doc) {
             return {
-                index: { _index: indexName },
+                index: { _index: 'career-stats' },
             };
         },
     });
-    const itemCount = await client.count({ index: indexName });
+    const itemCount = await elasticClient.count({ index: 'career-stats' });
     console.log(`Ingested ${itemCount.count} documents`);
 }
 
-storeAllGames(472);
