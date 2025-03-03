@@ -2,7 +2,7 @@
 
 import { useChat } from '@ai-sdk/react';
 
-export default function Chat() {
+export default function Page() {
   const { messages, input, handleInputChange, handleSubmit } = useChat();
   return (
     <div className="flex flex-col w-full max-w-md py-24 mx-auto stretch">

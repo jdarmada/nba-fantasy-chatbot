@@ -111,7 +111,6 @@ export async function fetch_all_games(
         if (response.ok) {
             const data = await response.json();
 
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const games = data.data.map((game: any) => ({
                 game_id: game.game.id,
                 game_date: game.game.date,
@@ -165,11 +164,10 @@ async function storeAllGames(player_id: number): Promise<void> {
         console.log('No career games found');
         return;
     }
-
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+   
     const bulkResponse = await client.helpers.bulk({
         datasource: careerGames,
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      
         onDocument(doc) {
             return {
                 index: { _index: indexName },
