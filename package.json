@@ -9,15 +9,12 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@ai-sdk/openai": "^1.1.15",
+    "@ai-sdk/openai": "^1.2.1",
     "@ai-sdk/react": "^1.1.19",
     "@elastic/elasticsearch": "^8.17.1",
-    "@langchain/community": "^0.3.33",
-    "@langchain/core": "^0.3.42",
-    "@langchain/ollama": "^0.2.0",
+    "@mastra/core": "^0.4.4",
     "ai": "^4.1.47",
     "next": "15.2.0",
-    "ollama-ai-provider": "^1.2.0",
     "openai": "^4.86.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
