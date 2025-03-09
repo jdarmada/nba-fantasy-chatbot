@@ -1,4 +1,4 @@
-import { elasticClient, checkIndex } from "./elasticClient";
+import { elasticClient, checkIndex } from './elasticClient';
 
 const teams: Record<number, string> = {
     1: 'Atlanta Hawks',
@@ -65,6 +65,153 @@ interface GameStats {
     blocks: number;
     fg_percentage: number;
     minutes_played: number;
+}
+
+interface Team {
+    id: number;
+    abbreviation: string;
+    city: string;
+    conference: string;
+    division: string;
+    full_name: string;
+    name: string;
+}
+
+interface Game {
+    id: number;
+    date: string;
+    home_team: Team;
+    home_team_score: number;
+    period: number;
+    postseason: boolean;
+    season: number;
+    status: string;
+    time: string;
+    visitor_team: Team;
+    visitor_team_score: number;
+}
+
+interface ApiResponse {
+    data: Game[];
+    meta: {
+        total_pages: number;
+        current_page: number;
+        next_page: number | null;
+        per_page: number;
+        total_count: number;
+    };
+}
+
+interface GameResult {
+    gameId: number;
+    date: string;
+    status: string;
+    season: number;
+    team: string;
+    opponent: string;
+    location: 'home' | 'away';
+    venueDetails: string;
+}
+
+interface ErrorResult {
+    error: string;
+}
+
+async function getNextUpcomingMatchup(
+    teamId: number
+): Promise<GameResult | ErrorResult> {
+    // Get current date
+    const today = new Date();
+    const formattedToday = today.toISOString().split('T')[0];
+
+    // Get current time in hours and minutes
+    const currentHour = today.getHours();
+    const currentMinute = today.getMinutes();
+
+    // Fetch upcoming games for the specified team
+    const url = `https://api.balldontlie.io/v1/games?team_ids[]=${teamId}&start_date=${formattedToday}&per_page=100`;
+
+    try {
+        const response = await fetch(url);
+        const data: ApiResponse = await response.json();
+
+        if (!data.data || data.data.length === 0) {
+            return { error: 'No upcoming games found for this team.' };
+        }
+
+        // Sort games
+        const sortedGames = data.data.sort((a, b) => {
+            return new Date(a.date).getTime() - new Date(b.date).getTime();
+        });
+
+        // Find the first game that hasn't started yet
+        for (const game of sortedGames) {
+            // Parse game time
+            const gameDate = new Date(game.date);
+            const gameHour = gameDate.getHours();
+            const gameMinute = gameDate.getMinutes();
+
+            // Check today's game
+            const isGameToday =
+                gameDate.toISOString().split('T')[0] === formattedToday;
+
+            // Check if game has started
+            if (isGameToday) {
+                // Compare times
+                if (
+                    currentHour < gameHour ||
+                    (currentHour === gameHour && currentMinute < gameMinute)
+                ) {
+                    return formatGameResponse(game, teamId);
+                }
+            } else {
+                return formatGameResponse(game, teamId);
+            }
+        }
+
+        return { error: 'No upcoming games' };
+    } catch (error) {
+        return { error: `Error fetching games` };
+    }
+}
+
+// Helper to format response
+function formatGameResponse(game: Game, teamId: number): GameResult {
+    const isHomeTeam = game.home_team.id === teamId;
+    const team = isHomeTeam ? game.home_team : game.visitor_team;
+    const opponent = isHomeTeam ? game.visitor_team : game.home_team;
+
+    return {
+        gameId: game.id,
+        date: game.date,
+        status: game.status,
+        season: game.season,
+        team: team.full_name,
+        opponent: opponent.full_name,
+        location: isHomeTeam ? 'home' : 'away',
+        venueDetails: `${isHomeTeam ? 'vs' : '@'} ${opponent.full_name}`,
+    };
+}
+
+export async function get_player_id(playerName: string) {
+    const [first_name, last_name] = playerName;
+    try {
+        const response = await fetch(
+            `https://api.balldontlie.io/v1/players?first_name=${first_name}&last_name=${last_name}`,
+            {
+                headers: {
+                    Authorization: `${process.env.NBA_STATS_API_KEY}`,
+                },
+            }
+        );
+        if (response.ok) {
+            const data = await response.json();
+            const playerInfo = [data.data.id, data.data.team.id];
+            return playerInfo;
+        }
+    } catch (error) {
+        console.error(error);
+    }
 }
 
 export async function fetch_all_games(
@@ -155,4 +302,3 @@ async function storeAllGames(player_id: number): Promise<void> {
     const itemCount = await elasticClient.count({ index: 'career-stats' });
     console.log(`Ingested ${itemCount.count} documents`);
 }
-
