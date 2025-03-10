@@ -66,3 +66,40 @@ export interface GameResult {
 export interface ErrorResult {
     error: string;
 }
+
+
+export type PlayerComparison = {
+  name: string;
+  playerId: number;
+  teamId: number;
+  nextOpponent: {
+    teamId: number;
+    teamName: string;
+    gameDate: string;
+    location: string;
+  };
+  stats: {
+    seasonAverages: {
+      points: number;
+      rebounds: number;
+      assists: number;
+      steals: number;
+      blocks: number;
+      fgPercentage: number;
+    };
+    historicalAverages: {
+      points: number;
+      rebounds: number;
+      assists: number;
+      steals: number;
+      blocks: number;
+      fgPercentage: number;
+    };
+  };
+};
+
+export type ComparisonResult = {
+  player1: PlayerComparison;
+  player2: PlayerComparison;
+  details: string;
+};

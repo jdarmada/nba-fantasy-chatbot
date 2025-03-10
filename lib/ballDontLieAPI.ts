@@ -156,18 +156,15 @@ export async function getNextUpcomingMatchup(
 
         // Find the first game that hasn't started yet
         for (const game of sortedGames) {
-            // Parse game time
             const gameDate = new Date(game.date);
             const gameHour = gameDate.getHours();
             const gameMinute = gameDate.getMinutes();
 
-            // Check today's game
             const isGameToday =
                 gameDate.toISOString().split('T')[0] === formattedToday;
 
             // Check if game has started
             if (isGameToday) {
-                // Compare times
                 if (
                     currentHour < gameHour ||
                     (currentHour === gameHour && currentMinute < gameMinute)
@@ -185,7 +182,6 @@ export async function getNextUpcomingMatchup(
     }
 }
 
-// Helper to format response
 function formatGameResponse(game: Game, teamId: number): GameResult {
     const isHomeTeam = game.home_team.id === teamId;
     const team = isHomeTeam ? game.home_team : game.visitor_team;

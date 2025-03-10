@@ -113,4 +113,3 @@ export async function getAverages(player_id: number, opponent_team_id: number) {
     }
 }
 
-console.log(getAverages(237, 25));
