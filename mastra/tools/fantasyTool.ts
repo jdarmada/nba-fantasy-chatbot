@@ -10,7 +10,7 @@ export const fantasyComparisonTool = createTool({
     }),
     description: "Compares the stats between two players",
     execute: async ({ context: { player1, player2 } }) => {
-        console.log("Using tool to compare players", player1, player2);
+        console.log("Using tool to compare players:", player1, player2);
         return await compareFantasyPlayers(player1, player2);
       },
 })

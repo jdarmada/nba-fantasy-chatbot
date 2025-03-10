@@ -1,7 +1,13 @@
 import { elasticClient, checkIndex } from './elasticClient';
 import { teams } from './data';
-import {ApiResponse, ErrorResult, Game, GameStats, GameResult, Team} from './types'
-
+import {
+    ApiResponse,
+    ErrorResult,
+    Game,
+    GameStats,
+    GameResult,
+    Team,
+} from './types';
 
 // Initial Fetch and Ingestion for Player Game Data from API into Elastic Index
 
@@ -96,9 +102,9 @@ async function storeAllGames(player_id: number): Promise<void> {
 // Functions to grab player/matchup info
 
 export async function getPlayerInfo(playerName: string) {
-    const nameParts = playerName.trim().split(/\s+/)
+    const nameParts = playerName.trim().split(/\s+/);
     const first_name = nameParts[0];
-    const last_name = nameParts.slice(1).join('')
+    const last_name = nameParts.slice(1).join('');
 
     try {
         const response = await fetch(
@@ -111,11 +117,11 @@ export async function getPlayerInfo(playerName: string) {
         );
         if (response.ok) {
             const data = await response.json();
-            
-            const player = data.data[0]
-            console.log(player)
 
-            return [player.id, player.team.id]
+            const player = data.data[0];
+            console.log(player);
+
+            return [player.id, player.team.id];
         }
     } catch (error) {
         console.error(error);
@@ -125,6 +131,7 @@ export async function getPlayerInfo(playerName: string) {
 export async function getNextUpcomingMatchup(
     teamId: number
 ): Promise<GameResult | ErrorResult> {
+    
     // Get current date
     const today = new Date();
     const formattedToday = today.toISOString().split('T')[0];
@@ -142,8 +149,12 @@ export async function getNextUpcomingMatchup(
                 Authorization: `${process.env.NBA_STATS_API_KEY}`,
             },
         });
-        const data: ApiResponse = await response.json();
+
+        if (!response.ok) {
+            return { error: `Error fetching games: ${response.statusText}` };
+        }
         
+        const data: ApiResponse = await response.json();
 
         if (!data.data || data.data.length === 0) {
             return { error: 'No upcoming games found for this team.' };
@@ -198,7 +209,3 @@ function formatGameResponse(game: Game, teamId: number): GameResult {
         venueDetails: `${isHomeTeam ? 'vs' : '@'} ${opponent.full_name}`,
     };
 }
-
-
-
-

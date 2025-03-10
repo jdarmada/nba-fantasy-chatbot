@@ -1,6 +1,6 @@
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-nocheck
-import { getPlayerInfo, getNextUpcomingMatchup } from './ballDontLieAPI';
+import { getPlayerInfo, getNextUpcomingMatchup } from './basketballStatsApi';
 import { getAverages } from './elasticAggs';
 import { ComparisonResult } from './types'
 import { teamsByName } from './data';
@@ -79,7 +79,8 @@ export async function compareFantasyPlayers(player1Name: string, player2Name: st
 }
 
 
-// Generate detailed comparison text
+// Tried to change prompt instructions to format better but found that adding this function is an easier way with more control.
+
 function generateComparisonDetails(
   player1Name: string, player1Game: any, player1Stats: any,
   player2Name: string, player2Game: any, player2Stats: any,

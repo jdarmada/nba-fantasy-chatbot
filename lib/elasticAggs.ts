@@ -64,6 +64,7 @@ export async function getAverages(player_id: number, opponent_team_id: number) {
                         },
                         {
                             range: {
+                                //Range for this season but will make more dynamic
                                 game_date: {
                                     gte: '2024-10-01',
                                     lte: '2025-06-30',
@@ -82,8 +83,6 @@ export async function getAverages(player_id: number, opponent_team_id: number) {
                 avg_fg_percentage: { avg: { field: 'fg_percentage' } },
             },
         });
-        console.log('historical', historicalQuery);
-        console.log('season', seasonQuery);
 
         return {
             player_id,

@@ -31,7 +31,7 @@ export function FantasyComparison() {
                 setError('No comparison data available');
             }
         } catch (err) {
-            console.error('Error in submit handler:', err);
+            console.error('handleSubmit error:', err);
             setError(
                 'Failed to compare players: ' +
                     (err instanceof Error ? err.message : String(err))
@@ -74,7 +74,7 @@ export function FantasyComparison() {
             {loading && (
                 <div className="animate-pulse mt-4 p-6 border rounded bg-blue-50">
                     <p className="text-center text-orange-500">
-                        Analyzing player statistics and matchups...
+                        WojBot is thinking...
                     </p>
                 </div>
             )}
