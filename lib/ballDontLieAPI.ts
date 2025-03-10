@@ -122,7 +122,7 @@ export async function getPlayerInfo(playerName: string) {
     }
 }
 
-async function getNextUpcomingMatchup(
+export async function getNextUpcomingMatchup(
     teamId: number
 ): Promise<GameResult | ErrorResult> {
     // Get current date

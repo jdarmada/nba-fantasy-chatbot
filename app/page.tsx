@@ -1,5 +1,4 @@
-
-import { Weather } from "./components/Weather";
+import { FantasyComparison } from "./components/FantasyComp";
 
 
 
@@ -7,7 +6,7 @@ export default function Page() {
  
   return (
    <div>
-    <Weather></Weather>
+    <FantasyComparison/>
    </div>
   );
 }
