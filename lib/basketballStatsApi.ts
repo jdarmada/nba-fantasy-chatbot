@@ -78,7 +78,25 @@ async function fetchAllGames(
 }
 
 async function storeAllGames(player_id: number): Promise<void> {
-    await checkIndex('career-stats');
+    const elasticIndex = 'career-stats'
+
+    await checkIndex(elasticIndex);
+
+     // Check if player already exists in index
+     const playerCheck =  await elasticClient.search({
+        index: 'career-stats',
+        query: {
+            match:{
+                player_id: player_id
+            }
+        }
+    })
+
+    if(playerCheck.hits.hits.length > 0) {
+        console.log(`Player already found in index: ${elasticIndex}, stopping ingestion. Please enter another Player ID`)
+        return
+    }
+
 
     const careerGames = await fetchAllGames(player_id);
 
@@ -131,7 +149,6 @@ export async function getPlayerInfo(playerName: string) {
 export async function getNextUpcomingMatchup(
     teamId: number
 ): Promise<GameResult | ErrorResult> {
-    
     // Get current date
     const today = new Date();
     const formattedToday = today.toISOString().split('T')[0];
@@ -153,7 +170,7 @@ export async function getNextUpcomingMatchup(
         if (!response.ok) {
             return { error: `Error fetching games: ${response.statusText}` };
         }
-        
+
         const data: ApiResponse = await response.json();
 
         if (!data.data || data.data.length === 0) {
@@ -209,3 +226,4 @@ function formatGameResponse(game: Game, teamId: number): GameResult {
         venueDetails: `${isHomeTeam ? 'vs' : '@'} ${opponent.full_name}`,
     };
 }
+
