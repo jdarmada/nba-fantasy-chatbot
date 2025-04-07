@@ -8,9 +8,8 @@ export const fantasyComparisonTool = createTool({
         player1:z.string(),
         player2:z.string()
     }),
-    description: "Compares the stats between two players",
+    description: "Use this tool to get the upcoming matchup for each player in the user query, then compare their historical and season averages",
     execute: async ({ context: { player1, player2 } }) => {
-        console.log("Using tool to compare players:", player1, player2);
         return await compareFantasyPlayers(player1, player2);
       },
 })

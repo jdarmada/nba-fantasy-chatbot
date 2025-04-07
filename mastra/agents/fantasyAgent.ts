@@ -1,6 +1,7 @@
 import { openai } from '@ai-sdk/openai';
 import { Agent } from '@mastra/core/agent';
 import { fantasyComparisonTool } from '../tools/fantasyTool';
+import { getNextUpcomingMatchup } from '@/lib/basketballStatsApi';
 
 
 export const fantasyAgent = new Agent({

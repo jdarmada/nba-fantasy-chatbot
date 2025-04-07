@@ -5,6 +5,7 @@ import { mastra } from '@/mastra'
 export async function comparePlayersForFantasy(query: string) {
     try {
         const agent = mastra.getAgent('fantasyAgent')
+        console.log(agent)
   
         const result = await agent.generate(query)
 
